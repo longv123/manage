@@ -2,7 +2,7 @@
     <div>
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-date"></i> 表单</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-date"></i> 1</el-breadcrumb-item>
                 <el-breadcrumb-item>markdown</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
@@ -20,23 +20,23 @@
 </template>
 
 <script>
-    import { markdownEditor } from 'vue-simplemde';
-    export default {
-        data: function(){
-            return {
-                content:'',
-                configs: {
-                    status: true,
-                    initialValue: 'Hello BBK',
-                    renderingConfig: {
-                        codeSyntaxHighlighting: true,
-                        highlightingTheme: 'atom-one-light'
-                    }
+import { markdownEditor } from 'vue-simplemde';
+export default {
+    data: function () {
+        return {
+            content: '',
+            configs: {
+                status: true,
+                initialValue: 'Hello BBK',
+                renderingConfig: {
+                    codeSyntaxHighlighting: true,
+                    highlightingTheme: 'atom-one-light'
                 }
             }
-        },
-        components: {
-            markdownEditor
         }
+    },
+    components: {
+        markdownEditor
     }
+}
 </script>
