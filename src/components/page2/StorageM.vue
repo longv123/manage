@@ -6,39 +6,57 @@
                 <el-breadcrumb-item>出库明细</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
-        <div class="handle-box">
-            <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-            <el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">
-                <el-option key="1" label="广东省" value="广东省"></el-option>
-                <el-option key="2" label="湖南省" value="湖南省"></el-option>
-            </el-select>
-            <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-            <el-button type="primary" icon="search" @click="search">搜索</el-button>
+        <div class="table_title">
+
         </div>
-        <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="date" label="日期" sortable width="150">
-            </el-table-column>
-            <el-table-column prop="name" label="姓名" width="120">
-            </el-table-column>
-            <el-table-column prop="address" label="地址" :formatter="formatter">
-            </el-table-column>
-            <el-table-column label="操作" width="180">
-                <template scope="scope">
-                    <el-button size="small"
-                            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                    <el-button size="small" type="danger"
-                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <div class="pagination">
-            <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
-                    :total="1000">
-            </el-pagination>
+        <div class="table_nav">
+            <h2>商品SN录入<span>*</span>:</h2>
+            <p>默认扫码录入,请连接扫码枪，进行扫码录入。</p>
         </div>
+        <div class="table_container">
+           <v-table
+            is-horizontal-resize
+            style="width:23%"
+            :columns="columns"
+            :table-data="tableData"
+            row-hover-color="skyblue"
+             :cell-edit-done="cellEditDone"
+            title-bg-color='#f4f4f4'
+            >
+            </v-table>
+           <v-table
+            is-horizontal-resize
+            style="width:23%"
+            :columns="columns"
+            :table-data="tableData2"
+            row-hover-color="skyblue"
+             :cell-edit-done="cellEditDone"
+            title-bg-color='#f4f4f4'
+           ></v-table>
+                <v-table
+            is-horizontal-resize
+            style="width:23%"
+            :columns="columns"
+            :table-data="tableData3"
+            row-hover-color="skyblue"
+             :cell-edit-done="cellEditDone"
+            title-bg-color='#f4f4f4'
+           ></v-table>
+                <v-table
+            is-horizontal-resize
+            style="width:23%"
+            :columns="columns"
+            :table-data="tableData4"
+            row-hover-color="skyblue"
+             :cell-edit-done="cellEditDone"
+            title-bg-color='#f4f4f4'
+           ></v-table>
+    </div>
+    <div class="table_footer">
+        <el-button type="info" plain>上一步</el-button>
+       <el-button type="primary" plain>完成入库</el-button>
+
+    </div>
     </div>
 </template>
 
@@ -46,97 +64,129 @@
 export default {
     data() {
         return {
-            url: './static/vuetable.json',
-            tableData: [],
-            cur_page: 1,
-            multipleSelection: [],
-            select_cate: '',
-            select_word: '',
-            del_list: [],
-            is_search: false
+            tableData3: [{ "id": "21", "sn": "156*****1987" },
+            { "id": "22", "sn": "182*****1538" },
+            { "id": "23", "sn": "161*****0097" },
+            { "id": "24", "sn": "197*****1123" },
+            { "id": "25", "sn": "183*****6678" },
+            { "id": "26", "sn": "183*****6678" },
+            { "id": "27", "sn": "183*****6678" },
+            { "id": "28", "sn": "183*****6678" },
+            { "id": "29", "sn": "183*****6678" },
+            { "id": "30", "sn": "183*****6678" },],
+            tableData4: [{ "id": "31", "sn": "156*****1987" },
+            { "id": "32", "sn": "182*****1538" },
+            { "id": "33", "sn": "161*****0097" },
+            { "id": "34", "sn": "197*****1123" },
+            { "id": "35", "sn": "183*****6678" },
+            { "id": "36", "sn": "183*****6678" },
+            { "id": "37", "sn": "183*****6678" },
+            { "id": "38", "sn": "183*****6678" },
+            { "id": "39", "sn": "183*****6678" },
+            { "id": "40", "sn": "183*****6678" },],
+            tableData2: [{ "id": "11", "sn": "156*****1987" },
+            { "id": "12", "sn": "182*****1538" },
+            { "id": "13", "sn": "161*****0097" },
+            { "id": "14", "sn": "197*****1123" },
+            { "id": "15", "sn": "183*****6678" },
+            { "id": "16", "sn": "183*****6678" },
+            { "id": "17", "sn": "183*****6678" },
+            { "id": "18", "sn": "183*****6678" },
+            { "id": "19", "sn": "183*****6678" },
+            { "id": "20", "sn": "183*****6678" },],
+            tableData: [
+                { "id": "1", "sn": "156*****1987" },
+                { "id": "2", "sn": "182*****1538" },
+                { "id": "3", "sn": "161*****0097" },
+                { "id": "4", "sn": "197*****1123" },
+                { "id": "5", "sn": "183*****6678" },
+                { "id": "6", "sn": "183*****6678" },
+                { "id": "7", "sn": "183*****6678" },
+                { "id": "8", "sn": "183*****6678" },
+                { "id": "9", "sn": "183*****6678" },
+                { "id": "10", "sn": "183*****6678" },
+            ],
+            columns: [
+                {                    field: 'id', title: '序号', width: 80, titleAlign: 'center', columnAlign: 'center', isEdit: true,
+                    formatter: function (rowData, rowIndex, pagingIndex, field) {
+                        this.rowIndex = rowIndex
+                        return `<span class='cell-edit-color'>${rowData[field]}</span>`;
+                    }, isResize: true                },
+                { field: 'sn', title: '商品SN码', width: 150, titleAlign: 'center', columnAlign: 'center', isEdit: true, isResize: true }
+            ]
         }
     },
     created() {
-        this.getData();
+        // this.getData();
     },
     computed: {
-        data() {
-            const self = this;
-            return self.tableData.filter(function (d) {
-                let is_del = false;
-                for (let i = 0; i < self.del_list.length; i++) {
-                    if (d.name === self.del_list[i].name) {
-                        is_del = true;
-                        break;
-                    }
-                }
-                if (!is_del) {
-                    if (d.address.indexOf(self.select_cate) > -1 &&
-                        (d.name.indexOf(self.select_word) > -1 ||
-                            d.address.indexOf(self.select_word) > -1)
-                    ) {
-                        return d;
-                    }
-                }
-            })
-        }
+        // data() {
+        //     const self = this;
+        //     return self.tableData.filter(function (d) {
+        //         let is_del = false;
+        //         for (let i = 0; i < self.del_list.length; i++) {
+        //             if (d.name === self.del_list[i].name) {
+        //                 is_del = true;
+        //                 break;
+        //             }
+        //         }
+        //         if (!is_del) {
+        //             if (d.address.indexOf(self.select_cate) > -1 &&
+        //                 (d.name.indexOf(self.select_word) > -1 ||
+        //                     d.address.indexOf(self.select_word) > -1)
+        //             ) {
+        //                 return d;
+        //             }
+        //         }
+        //     })
+        // },
+
     },
     methods: {
-        handleCurrentChange(val) {
-            this.cur_page = val;
-            this.getData();
+
+        // 单元格编辑回调
+        cellEditDone(newValue, oldValue, rowIndex, rowData, field) {
+            console.log(newValue, oldValue, rowData, rowIndex, field)
+            this.tableData[rowIndex][field] = newValue;
+
+            // 接下来处理你的业务逻辑，数据持久化等...
         },
         getData() {
             let self = this;
-            if (process.env.NODE_ENV === 'development') {
-                self.url = '/ms/table/list';
-            };
-            self.$axios.post(self.url, { page: self.cur_page }).then((res) => {
-                self.tableData = res.data.list;
-            })
-        },
-        search() {
-            this.is_search = true;
-        },
-        formatter(row, column) {
-            return row.address;
-        },
-        filterTag(value, row) {
-            return row.tag === value;
-        },
-        handleEdit(index, row) {
-            this.$message('编辑第' + (index + 1) + '行');
-        },
-        handleDelete(index, row) {
-            this.$message.error('删除第' + (index + 1) + '行');
-        },
-        delAll() {
-            const self = this,
-                length = self.multipleSelection.length;
-            let str = '';
-            self.del_list = self.del_list.concat(self.multipleSelection);
-            for (let i = 0; i < length; i++) {
-                str += self.multipleSelection[i].name + ' ';
-            }
-            self.$message.error('删除了' + str);
-            self.multipleSelection = [];
-        },
-        handleSelectionChange(val) {
-            this.multipleSelection = val;
+            // if (process.env.NODE_ENV === 'development') {
+            //     self.url = '/ms/table/list';
+            // };
         }
     }
 }
 </script>
 
 <style scoped>
-.handle-box {
-  margin-bottom: 20px;
+.table_title {
+  height: 100px;
+  background-color: #f4f4f4;
+  margin-bottom: 40px;
 }
-.handle-select {
-  width: 120px;
+.table_container {
+  display: flex;
+  justify-content: space-around;
 }
-.handle-input {
-  width: 300px;
-  display: inline-block;
+.table_nav {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  margin-bottom: 40px;
+}
+.table_nav span {
+  color: red;
+  margin-right: 10px;
+}
+.table_nav p {
+  color: red;
+  margin-left: 30px;
+}
+.table_footer {
+  margin-top: 40px;
+  margin-left: 20px;
 }
 </style>

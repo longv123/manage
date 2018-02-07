@@ -40,9 +40,29 @@ export default {
         submitForm(formName) {
             const self = this;
             self.$refs[formName].validate((valid) => {
+                console.log(valid)
                 if (valid) {
-                    localStorage.setItem('ms_username', self.ruleForm.username);
-                    self.$router.push('/readme');
+                    this.$indexServer.loginByPassword(self.ruleForm.username, self.ruleForm.password)
+                        .then(res => {
+                            console.log(res)
+                            if (res.data.code === 200) {
+                                localStorage.setItem('ms_username', self.ruleForm.username);
+                                self.$router.push('/readme');
+                            } else if (res.data.code === 404) {
+                                this.$message({
+                                    showClose: true,
+                                    message: '用户不存在,请重新填写!',
+                                    type: 'warning'
+                                });
+                            } else if (res.data.code === 401) {
+                                this.$message({
+                                    showClose: true,
+                                    message: '用户密码错误，请重新填写!',
+                                    type: 'error'
+                                });
+                            }
+
+                        })
                 } else {
                     console.log('error submit!!');
                     return false;

@@ -7,136 +7,235 @@
             </el-breadcrumb>
         </div>
         <div class="handle-box">
-            <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-            <el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">
-                <el-option key="1" label="广东省" value="广东省"></el-option>
-                <el-option key="2" label="湖南省" value="湖南省"></el-option>
-            </el-select>
-            <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-            <el-button type="primary" icon="search" @click="search">搜索</el-button>
+            <el-form :inline="true" :model="searchInfo">
+                <el-form-item label=产品名：>
+                    <el-input v-model="searchInfo.searchName" placeholder="请输入查询的产品名称"></el-input>
+                </el-form-item>
+                <el-form-item label=产品编号：>
+                    <el-input v-model="searchInfo.searchId" placeholder="请输入查询的产品编号"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="search" icon="search">查询</el-button>
+                </el-form-item>
+            </el-form>
         </div>
-        <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="date" label="日期" sortable width="150">
-            </el-table-column>
-            <el-table-column prop="name" label="姓名" width="120">
-            </el-table-column>
-            <el-table-column prop="address" label="地址" :formatter="formatter">
-            </el-table-column>
-            <el-table-column label="操作" width="180">
-                <template scope="scope">
-                    <el-button size="small"
-                            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                    <el-button size="small" type="danger"
-                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        <div class="table-box">
+            <table border="1" bordercolor='#D2D2D2' class='product_table' cellspacing="0" cellpadding="0" frame="void">
+                <tr style='background-color: #F5F6FA;' class='product_table_header'>
+                    <th width='20%'>产品名</th>
+                    <th width='20%'>产品编号</th>
+                    <th width='10%'>售卖价</th>
+                    <th width='20%'>所属分类</th>
+                    <th width='20%'>当前库存/件</th>
+                    <th width='10%'>操作</th>
+                </tr>
+                <tr v-for='(item,index) in productDetail' >
+                    <td colspan='6'>
+                        <table border='1' bordercolor='#D2D2D2' class='table_child' cellspacing="0" cellpadding="0" frame="void">
+                            <tr class='table_child_header'>
+                                <td width='20%'>{{item.name}}</td>
+                                <td width='20%'>{{item.id}}</td>
+                                <td width='10%'>{{item.price}}</td>
+                                <td width='20%'>{{item.types}}</td>
+                                <td @click = '' width='20%' class='select_not'>{{item.stock}}</td>
+                                <td @click='isHide(index)' width='10%' class='select_not'>{{item.stockDetail}}</td>
+                            </tr>
+                            <tr class='tr_frame' v-show='frameHide & activeIndex == index'>
+                                <td colspan='6'>
+                                    <table class='table_frame' border="1" bordercolor='#D2D2D2' cellspacing="0" cellpadding="0">
+                                        <tr style='background-color: #F5F6FA'>
+                                            <th>规格值</th>
+                                            <th>商品sku</th>
+                                            <th>当前库存/件</th>
+                                        </tr>
+                                        <tr v-for='(item,index) in colorData'>
+                                            <td>{{item.goodsColor}}</td>
+                                            <td>{{item.goodsSku}}</td>
+                                            <td class='select_not'>{{item.goodsStock}}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!--<el-table :data="tableData2" style="width: 100%" :border=true>
+            <el-table-column type="expand" v-show='isExpand'>
+                <template slot-scope="props">
+                    <el-table ref="singleTable" :data="tableData" style="width:50%;margin: 0 25%" :border=true >
+                        <el-table-column property="goodsColor" label="规格值" width="120" align='center'></el-table-column>
+                        <el-table-column property="goodsSku" label="商品sku" width="250" align='center'></el-table-column>
+                        <el-table-column property="goodsStock" label="当前库存/件" align='center' style='color:red'></el-table-column>
+                    </el-table>
                 </template>
             </el-table-column>
-        </el-table>
-        <div class="pagination">
-            <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
-                    :total="1000">
-            </el-pagination>
-        </div>
+            <el-table-column label="产品名" prop="name" align='center' ></el-table-column>
+            <el-table-column label="产品编号" prop="id" align='center' ></el-table-column>
+            <el-table-column label="售卖价" prop="price" align='center' ></el-table-column>
+            <el-table-column label="所属分类" prop="types" align='center'></el-table-column>
+            <el-table-column label="当前库存/件" prop="stock" align='center'>
+                <template slot-scope="scope">
+                <el-button @click="handleClick(scope.row.index)" type="text" size="medium">{{scope.row.stock}}</el-button>
+            </template>
+            </el-table-column>
+            <el-table-column label="操作" prop="stockDetail" align='center'>
+                <template slot-scope="scope">
+                    <el-button @click="handleClick(scope.row)" type="text" size="medium">商品（4件）</el-button>
+                </template>
+            </el-table-column>
+        </el-table>-->
     </div>
 </template>
 
 <script>
-export default {
-    data() {
-        return {
-            url: './static/vuetable.json',
-            tableData: [],
-            cur_page: 1,
-            multipleSelection: [],
-            select_cate: '',
-            select_word: '',
-            del_list: [],
-            is_search: false
-        }
-    },
-    created() {
-        this.getData();
-    },
-    computed: {
+    export default {
         data() {
-            const self = this;
-            return self.tableData.filter(function (d) {
-                let is_del = false;
-                for (let i = 0; i < self.del_list.length; i++) {
-                    if (d.name === self.del_list[i].name) {
-                        is_del = true;
-                        break;
-                    }
-                }
-                if (!is_del) {
-                    if (d.address.indexOf(self.select_cate) > -1 &&
-                        (d.name.indexOf(self.select_word) > -1 ||
-                            d.address.indexOf(self.select_word) > -1)
-                    ) {
-                        return d;
-                    }
-                }
-            })
-        }
-    },
-    methods: {
-        handleCurrentChange(val) {
-            this.cur_page = val;
-            this.getData();
-        },
-        getData() {
-            let self = this;
-            if (process.env.NODE_ENV === 'development') {
-                self.url = '/ms/table/list';
-            };
-            self.$axios.post(self.url, { page: self.cur_page }).then((res) => {
-                self.tableData = res.data.list;
-            })
-        },
-        search() {
-            this.is_search = true;
-        },
-        formatter(row, column) {
-            return row.address;
-        },
-        filterTag(value, row) {
-            return row.tag === value;
-        },
-        handleEdit(index, row) {
-            this.$message('编辑第' + (index + 1) + '行');
-        },
-        handleDelete(index, row) {
-            this.$message.error('删除第' + (index + 1) + '行');
-        },
-        delAll() {
-            const self = this,
-                length = self.multipleSelection.length;
-            let str = '';
-            self.del_list = self.del_list.concat(self.multipleSelection);
-            for (let i = 0; i < length; i++) {
-                str += self.multipleSelection[i].name + ' ';
+            return {
+                is_search: false,
+                isExpand: false,
+                frameHide:false,
+                activeIndex: '',
+                searchInfo: {
+                    searchId: '',
+                    searchName: ''
+                },
+                colorData: [{
+                    goodsColor: '中国红',
+                    goodsSku: 'RYDXX0308-1',
+                    goodsStock: '122'
+                }, {
+                    goodsColor: '传奇黑',
+                    goodsSku: 'BYDXX0308-1',
+                    goodsStock: '110'
+                }, {
+                    goodsColor: '樱花粉',
+                    goodsSku: 'PYDXX0308-1',
+                    goodsStock: '122'
+                }, {
+                    goodsColor: '经典白',
+                    goodsSku: 'WYDXX0308-1',
+                    goodsStock: '110'
+                }],
+                productDetail: [{
+                    name: '逸豆（尊贵版）',
+                    id: 'ET-YiDou 0308-1',
+                    price: '¥ 2699.00',
+                    types: '硬件设备',
+                    stock: '232',
+                    stockDetail: '商品（4件）'
+                }, {
+                    name: '逸豆',
+                    id: 'ET-YiDou 0308-0',
+                    price: '¥ 1799.00',
+                    types: '硬件设备',
+                    stock: '431',
+                    stockDetail: '商品（4件）'
+                }]
             }
-            self.$message.error('删除了' + str);
-            self.multipleSelection = [];
         },
-        handleSelectionChange(val) {
-            this.multipleSelection = val;
+        created() {
+        },
+        computed: {},
+        methods: {
+            handleCurrentChange(val) {
+                this.cur_page = val;
+            },
+            search() {
+                this.is_search = true;
+            },
+            formatter(row, column) {
+                return row.address;
+            },
+            filterTag(value, row) {
+                return row.tag === value;
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            handleClick(row) {
+                console.log(row);
+            },
+            isHide(index){
+                if (this.activeIndex ==index) {
+                    this.frameHide = !this.frameHide
+                }
+                else {
+                    this.activeIndex = index
+                    this.frameHide = true
+                }
+            }
+        },
+        watch:{
+            activeIndex:function (m,n) {
+            }
         }
     }
-}
 </script>
 
 <style scoped>
-.handle-box {
-  margin-bottom: 20px;
-}
-.handle-select {
-  width: 120px;
-}
-.handle-input {
-  width: 300px;
-  display: inline-block;
-}
+    /*搜索模块*/
+    .handle-box {
+        margin-bottom: 20px;
+    }
+    .table-box{
+        border: 1px solid #D2D2D2;
+    }
+    /*列表模块*/
+    .table_child tr:hover,.table_frame tr:hover{
+        background-color: #F5F6FA;
+    }
+    .product_table,.table_frame,.table_child {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 15px;
+        color: rgb(0, 1, 32);
+    }
+    .select_not{
+        color: #20A0FF;
+        cursor: pointer;
+        text-decoration: underline;
+        moz-user-select: -moz-none;
+        -moz-user-select: none;
+        -o-user-select:none;
+        -khtml-user-select:none;
+        -webkit-user-select:none;
+        -ms-user-select:none;
+        user-select:none;
+    }
+    /*父表格*/
+    .product_table th{
+        /*border: 1px solid #D2D2D2;*/
+        height: 50px;
+    }
+    .product_table .product_table_header{
+        /*border: 1px solid #D2D2D2;*/
+    }
+    /*子表格*/
+    /*.table_child{
+        border-top: 1px solid #fff;
+    }*/
+    .table_child_header td{
+        border: 1px solid #D2D2D2;
+    }
+    .table_child td {
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+    }
+    /*表格弹框*/
+    .table_frame{
+        width: 500px;
+        margin: 10px auto;
+        text-align: center;
+        font-size: 14px;
+    }
+    .table_frame td,.table_frame th{
+        height: 30px;
+    }
+    .tr_frame{
+        background: rgba(245,246,250,0.2)!important;
+        z-index: 5;
+    }
 </style>
